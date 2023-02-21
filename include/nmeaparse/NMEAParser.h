@@ -77,7 +77,7 @@ public:
 	NMEAParseError(std::string msg, NMEASentence n);
 	virtual ~NMEAParseError();
 
-	std::string what();
+    virtual const char * what() const noexcept override;
 };
 
 

@@ -22,7 +22,7 @@ using namespace nmea;
 // --------- NMEA PARSE ERROR--------------
 
 NMEAParseError::NMEAParseError(std::string msg)
-	: message(msg)
+	:std::exception(), message(msg)
 {}
 NMEAParseError::NMEAParseError(std::string msg, NMEASentence n)
 	: message(msg), nmea(n)
@@ -31,8 +31,8 @@ NMEAParseError::NMEAParseError(std::string msg, NMEASentence n)
 NMEAParseError::~NMEAParseError()
 {}
 
-std::string NMEAParseError::what(){
-	return message;
+const char * NMEAParseError::what() const noexcept {
+	return message.c_str();
 }
 
 
