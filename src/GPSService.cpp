@@ -14,7 +14,6 @@
 #include <iostream>
 #include <cmath>
 
-using namespace std;
 using namespace std::chrono;
 
 using namespace nmea;
@@ -22,7 +21,7 @@ using namespace nmea;
 
 // ------ Some helpers ----------
 // Takes the NMEA lat/long format (dddmm.mmmm, [N/S,E/W]) and converts to degrees N,E only
-double convertLatLongToDeg(string llstr, string dir){
+double convertLatLongToDeg(std::string llstr, std::string dir){
 
 	double pd = parseDouble(llstr);
 	double deg = trunc(pd / 100);				//get ddd from dddmm.mmmm
@@ -147,8 +146,8 @@ void GPSService::read_GPGGA(const NMEASentence& nmea){
 		// TIMESTAMP
 		this->fix.timestamp.setTime(parseDouble(nmea.parameters[0]));
 
-		string sll;
-		string dir;
+		std::string sll;
+		std::string dir;
 		// LAT
 		sll = nmea.parameters[1];
 		dir = nmea.parameters[2];
@@ -241,7 +240,7 @@ void GPSService::read_GPGSA(const NMEASentence& nmea){
 
 		// FIX TYPE
 		bool lockupdate = false;
-		uint64_t fixtype = parseInt(nmea.parameters[1]);
+		std::uint64_t fixtype = parseInt(nmea.parameters[1]);
 		this->fix.type = (int8_t)fixtype;
 		if (fixtype == 1){
 			lockupdate = this->fix.setlock(false);
@@ -317,13 +316,13 @@ void GPSService::read_GPGSV(const NMEASentence& nmea){
 		//}
 
 		// VISIBLE SATELLITES
-		this->fix.visibleSatellites = (int32_t)parseInt(nmea.parameters[2]);
+		this->fix.visibleSatellites = (std::int32_t)parseInt(nmea.parameters[2]);
 		if (this->fix.trackingSatellites == 0){
 			this->fix.visibleSatellites = 0;			// if no satellites are tracking, then none are visible!
 		}												// Also NMEA defaults to 12 visible when chip powers on. Obviously not right.
 
-		uint32_t totalPages = (uint32_t)parseInt(nmea.parameters[0]);
-		uint32_t currentPage = (uint32_t)parseInt(nmea.parameters[1]);
+		std::uint32_t totalPages = (std::uint32_t)parseInt(nmea.parameters[0]);
+        std::uint32_t currentPage = (std::uint32_t)parseInt(nmea.parameters[1]);
 
 
 		//if this is the first page, then reset the almanac
@@ -336,17 +335,17 @@ void GPSService::read_GPGSV(const NMEASentence& nmea){
 		this->fix.almanac.totalPages = totalPages;
 		this->fix.almanac.visibleSize = this->fix.visibleSatellites;
 
-		int entriesInPage = (nmea.parameters.size() - 3) >> 2;	//first 3 are not satellite info
+		std::size_t entriesInPage = (nmea.parameters.size() - 3) >> 2;	//first 3 are not satellite info
 		//- entries come in 4-ples, and truncate, so used shift
 		GPSSatellite sat;
 		for (int i = 0; i < entriesInPage; i++){
 			int prop = 3 + i * 4;
 
 			// PRN, ELEVATION, AZIMUTH, SNR
-			sat.prn = (uint32_t)parseInt(nmea.parameters[prop]);
-			sat.elevation = (uint32_t)parseInt(nmea.parameters[prop + 1]);
-			sat.azimuth = (uint32_t)parseInt(nmea.parameters[prop + 2]);
-			sat.snr = (uint32_t)parseInt(nmea.parameters[prop + 3]);
+			sat.prn = (std::uint32_t)parseInt(nmea.parameters[prop]);
+			sat.elevation = (std::uint32_t)parseInt(nmea.parameters[prop + 1]);
+			sat.azimuth = (std::uint32_t)parseInt(nmea.parameters[prop + 2]);
+			sat.snr = (std::uint32_t)parseInt(nmea.parameters[prop + 3]);
 
 			//cout << "ADDING SATELLITE ::" << sat.toString() << endl;
 			this->fix.almanac.updateSatellite(sat);
@@ -409,8 +408,8 @@ void GPSService::read_GPRMC(const NMEASentence& nmea){
 		// TIMESTAMP
 		this->fix.timestamp.setTime(parseDouble(nmea.parameters[0]));
 
-		string sll;
-		string dir;
+		std::string sll;
+		std::string dir;
 		// LAT
 		sll = nmea.parameters[2];
 		dir = nmea.parameters[3];
