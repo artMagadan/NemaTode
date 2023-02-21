@@ -7,8 +7,7 @@
  *  See the license file included with this source.
  */
 
-#ifndef NUMBERCONVERSION_H_
-#define NUMBERCONVERSION_H_
+#pragma once
 
 
 #include <cstdint>
@@ -22,16 +21,14 @@ namespace nmea {
 class NumberConversionError : public std::exception {
 public:
 	std::string message;
-	NumberConversionError(std::string msg)
-		: message(msg)
+	NumberConversionError(std::string msg):std::exception(),message(msg)
 	{};
 
-	virtual ~NumberConversionError()
-	{};
+	virtual ~NumberConversionError(){};
 
-	std::string what(){
-		return message;
-	}
+    virtual const char* what() const noexcept override{
+        return message.c_str();
+    }
 };
 
 
@@ -43,7 +40,3 @@ int64_t parseInt(std::string s, int radix = 10);
 //void NumberConversion_test();
 
 }
-
-
-
-#endif /* NUMBERCONVERSION_H_ */
