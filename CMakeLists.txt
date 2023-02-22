@@ -18,6 +18,7 @@ set(headers
 	include/nmeaparse/NMEACommand.h
 	include/nmeaparse/NMEAParser.h
 	include/nmeaparse/NumberConversion.h
+	include/nmeaparse/GNSService.h
 )
 
 set(sources
@@ -26,6 +27,7 @@ set(sources
 	src/NMEACommand.cpp
 	src/NMEAParser.cpp
 	src/NumberConversion.cpp
+	src/GNSService.cpp
 )
 
 add_library(${PROJECT_NAME} STATIC ${headers} ${sources})

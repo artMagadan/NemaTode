@@ -8,9 +8,6 @@
  */
 
 #include <nmeaparse/NumberConversion.h>
-#include <cstdlib>
-
-using namespace std;
 
 namespace nmea {
 // Note: both parseDouble and parseInt return 0 with "" input.
@@ -27,10 +24,11 @@ namespace nmea {
 			}
 			return d;
 		}
-		int64_t parseInt(std::string s, int radix){
+
+		std::int64_t parseInt(std::string s, int radix){
 			char* p;
 
-			int64_t d = ::strtoll(s.c_str(), &p, radix);
+            std::int64_t d = ::strtoll(s.c_str(), &p, radix);
 
 			if (*p != 0) {
 				std::stringstream ss;

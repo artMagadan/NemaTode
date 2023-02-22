@@ -21,6 +21,7 @@
 #include <nmeaparse/NMEAParser.h>
 #include <nmeaparse/NMEACommand.h>
 #include <nmeaparse/GPSService.h>
+#include <nmeaparse/GNSService.h>
 
 #include <nmeaparse/NumberConversion.h>
 

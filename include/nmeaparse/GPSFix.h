@@ -24,6 +24,7 @@ namespace nmea {
 	class GPSAlmanac;
 	class GPSFix;
 	class GPSService;
+    class IService;
 
 
 	// =========================== GPS SATELLITE =====================================
@@ -56,6 +57,7 @@ namespace nmea {
 
 	class GPSAlmanac {
 		friend GPSService;
+        friend IService;
 	private:
 		uint32_t visibleSize;
 		uint32_t lastPage;
@@ -125,7 +127,7 @@ namespace nmea {
 
 	class GPSFix {
 		friend GPSService;
-
+        friend IService;
 	private:
 
 		bool haslock;
