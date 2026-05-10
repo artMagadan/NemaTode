@@ -6,18 +6,36 @@
 #include <iostream>
 #include <fstream>
 #include <nmeaparse/nmea.h>
-
-
-
-
+#include <filesystem>
+#include <vector>
 
 using namespace std;
 using namespace nmea;
 
+std::string readFile(ifstream &file){
+    std::stringstream ss;
+    string line;
+    try{
+        while ( getline(file, line) ){
+            ss << line << endl;
+//            result += "\n";
+        }
+    }catch (exception& e){
+        // Notify the proper authorities. Something is on fire.
+        cout << "Something Broke: " << e.what() << endl;
+        return "";
+       
+    }
+    return ss.str();
+}
+
 int main(int argc, char** argv){
 
 
-
+    std::stringstream ss;
+    
+    std::vector<std::string> result;
+    
 	// --------------------------------------------------------
 	// ------------  CONFIGURE GPS SERVICE  -------------------
 	// --------------------------------------------------------
@@ -28,31 +46,41 @@ int main(int argc, char** argv){
 	//parser.log = true;		// true: will spit out all sorts of parse info on each sentence.
 
 	// Handle events when the lock state changes
-	gps.onLockStateChanged += [](bool newlock){
+	gps.onLockStateChanged += [&ss](bool newlock){
 		if (newlock){
 			cout << "\t\t\tGPS aquired LOCK!" << endl;
+            ss<< "\t\t\tGPS aquired LOCK!" <<endl;
 		}
 		else {
 			cout << "\t\t\tGPS lost lock. Searching..." << endl;
+            ss<< "\t\t\tGPS lost lock. Searching..." <<endl;
 		}
 	};
 
 	// Handle any changes to the GPS Fix... This is called after onSentence
-	gps.onUpdate += [&gps](){
+	gps.onUpdate += [&gps, &ss](){
 		cout << "\t\t\tPosition: " << gps.fix.latitude << "'N, " << gps.fix.longitude << "'E" << endl << endl;
+        ss << "\t\t\tPosition: " << gps.fix.latitude << "'N, " << gps.fix.longitude << "'E" << endl << endl;
 	};
 
 	// (optional) - Handle events when the parser receives each sentence
-	parser.onSentence += [&gps](const NMEASentence& n){
+	parser.onSentence += [&gps, &ss](const NMEASentence& n){
 		cout << "Received " << (n.checksumOK() ? "good" : "bad") << " GPS Data: " << n.name << endl;
+        ss << "Received " << (n.checksumOK() ? "good" : "bad") << " GPS Data: " << n.name << endl;
 	};
 
 
 	cout << "-------- Reading GPS NMEA data --------" << endl;
+    ss << "-------- Reading GPS NMEA data --------" << endl;
 
 	// --------------------------------------------------------
 	// ---------------   STREAM THE DATA  ---------------------
 	// --------------------------------------------------------
+#ifndef NEMATODE_SOURCE_DIR
+#define NEMATODE_SOURCE_DIR "."
+#endif
+    std::filesystem::path path = std::filesystem::path(NEMATODE_SOURCE_DIR) / "nmea_log_gps.txt";
+    
 	try {
 		// From a buffer in memory...
 		//   cout << ">> [ From Buffer]" << endl;
@@ -68,8 +96,11 @@ int main(int argc, char** argv){
 		// -- OR --
 		// From a text log file...
 		cout << ">> [ From File]" << endl;
+        ss <<">> [ From File]" << endl;
 		string line;
-		ifstream file("nmea_log.txt");
+        
+		ifstream file(path.string());
+                
 		while ( getline(file, line) ){
 			try {
 				parser.readLine(line);
@@ -84,9 +115,9 @@ int main(int argc, char** argv){
 	catch (exception& e){
 		// Notify the proper authorities. Something is on fire.
 		cout << "Something Broke: " << e.what() << endl;
+       
 	}
 	// ---------------------------------------
-
 
 	// Show the final fix information
 	//cout << gps.fix.toString() << endl;
@@ -106,24 +137,31 @@ int main(int argc, char** argv){
 	// Create our custom parser...
 	NMEAParser custom_parser;
 	//parser.log = true;
-	custom_parser.setSentenceHandler("MYNMEA", [](const NMEASentence& n){
+	custom_parser.setSentenceHandler("MYNMEA", [&ss](const NMEASentence& n){
 		cout << "Handling $" << n.name << ":" << endl;
+        ss << "Handling $" << n.name << ":" << endl;
 		for (size_t i = 0; i < n.parameters.size(); ++i){
 			cout << "    [" << i << "] \t- " << n.parameters[i];
+            ss << "    [" << i << "] \t- " << n.parameters[i];
 			try {
 				double num = parseDouble(n.parameters[i]);
 				cout << "      (number: " << num << ")";
+                ss << "      (number: " << num << ")";
 			} catch (NumberConversionError&){
 				cout << " (string)";
+                ss << " (string)";
 			}
 			cout << endl;
+            ss << endl;
 		}
 	});
-	custom_parser.onSentence += [](const NMEASentence& n){
+	custom_parser.onSentence += [&ss](const NMEASentence& n){
 		cout << "Received $" << n.name << endl;
+        ss << "Received $" << n.name << endl;
 	};
 
 	cout << "-------- Reading non-GPS NMEA data --------" << endl;
+    ss << "-------- Reading non-GPS NMEA data --------" << endl;
 
 	// Read the data stream...
 	// These don't have correct checksums. They're made up.
@@ -173,18 +211,22 @@ int main(int argc, char** argv){
 	NMEACommandQueryRate				cmd3;	// The $PSRF command that allows for GPS sentence selection and rate setting.
 	NMEACommandSerialConfiguration		cmd4;	// The $PSRF command that can configure a UART baud rate.
 	NMEAParser test_parser;
-	test_parser.onSentence += [&cmd1, &cmd2, &cmd3, &cmd4](const NMEASentence& n){
+	test_parser.onSentence += [&cmd1, &cmd2, &cmd3, &cmd4, &ss](const NMEASentence& n){
 		cout << "Received:  " << n.text;
+        ss<<"Received:  " << n.text;
 		
 		if (!n.checksumOK()){
 			cout << "\t\tChecksum FAIL!" << endl;
+            ss << "\t\tChecksum FAIL!" << endl;
 		}
 		else {
 			cout << "\t\tChecksum PASS!" << endl;
+            ss << "\t\tChecksum PASS!" << endl;
 		}
 	};
 
 	cout << "-------- NMEA Command Generation --------" << endl;
+    ss << "-------- NMEA Command Generation --------" << endl;
 
 	// Just filling it with something. Could be whatever you need.
 	cmd1.name		= "CMD1";
@@ -213,11 +255,11 @@ int main(int argc, char** argv){
 	cout << endl;
 	cout << endl;
 	cout << "-------- ALL DONE --------" << endl;
-
-
-
-	cin.ignore();
-
+    
+    ss << endl;
+    ss << endl;
+    ss << "-------- ALL DONE --------" << endl;
+    
 	return 0;
 
 }

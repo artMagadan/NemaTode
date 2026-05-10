@@ -50,7 +50,7 @@ int main(int argc, char** argv){
 	// -- OR --
 	// From a file
 	string line;
-	ifstream file("nmea_log.txt");
+	ifstream file("nmea_log_gps.txt");
 	while (getline(file, line)){
 		try {
 			parser.readLine(line);

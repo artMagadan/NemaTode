@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 3.1)
-project(NemaTode VERSION 1.1)
+cmake_minimum_required(VERSION 3.10...4.0)
+project(NemaTode VERSION 1.2.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -76,6 +76,8 @@ install(
 
 # build demo_advanced
 add_executable(demo_advanced demo_advanced.cpp)
+target_compile_features(demo_advanced PRIVATE cxx_std_17)
+target_compile_definitions(demo_advanced PRIVATE NEMATODE_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(demo_advanced ${PROJECT_NAME})
 
 # build demo_simple
