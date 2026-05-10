@@ -12,22 +12,24 @@ set(CMAKE_MINSIZEREL_POSTFIX "s" CACHE STRING "Add postfix to target for MinSize
 
 set(headers
 	include/nmeaparse/Event.h
+	include/nmeaparse/GNSService.h
 	include/nmeaparse/GPSFix.h
 	include/nmeaparse/GPSService.h
+	include/nmeaparse/IService.h
 	include/nmeaparse/nmea.h
 	include/nmeaparse/NMEACommand.h
 	include/nmeaparse/NMEAParser.h
 	include/nmeaparse/NumberConversion.h
-	include/nmeaparse/GNSService.h
 )
 
 set(sources
+	src/GNSService.cpp
 	src/GPSFix.cpp
 	src/GPSService.cpp
+	src/IService.cpp
 	src/NMEACommand.cpp
 	src/NMEAParser.cpp
 	src/NumberConversion.cpp
-	src/GNSService.cpp
 )
 
 add_library(${PROJECT_NAME} STATIC ${headers} ${sources})
