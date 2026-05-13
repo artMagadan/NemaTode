@@ -10,6 +10,8 @@ set(CMAKE_DEBUG_POSTFIX "d" CACHE STRING "Add postfix to target for Debug build.
 set(CMAKE_RELWITHDEBINFO_POSTFIX "rd" CACHE STRING "Add postfix to target for RelWithDebInfo build.")
 set(CMAKE_MINSIZEREL_POSTFIX "s" CACHE STRING "Add postfix to target for MinSizeRel build")
 
+option(NEMATODE_BUILD_DEMOS "Build NemaTode demo executables" ON)
+
 set(headers
 	include/nmeaparse/Event.h
 	include/nmeaparse/GNSService.h
@@ -74,12 +76,14 @@ install(
 	DESTINATION ${INSTALL_CONFIGDIR}
 )
 
-# build demo_advanced
-add_executable(demo_advanced demo_advanced.cpp)
-target_compile_features(demo_advanced PRIVATE cxx_std_17)
-target_compile_definitions(demo_advanced PRIVATE NEMATODE_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
-target_link_libraries(demo_advanced ${PROJECT_NAME})
+if(NEMATODE_BUILD_DEMOS)
+	# build demo_advanced
+	add_executable(demo_advanced demo_advanced.cpp)
+	target_compile_features(demo_advanced PRIVATE cxx_std_17)
+	target_compile_definitions(demo_advanced PRIVATE NEMATODE_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
+	target_link_libraries(demo_advanced ${PROJECT_NAME})
 
-# build demo_simple
-add_executable(demo_simple demo_simple.cpp)
-target_link_libraries(demo_simple ${PROJECT_NAME})
+	# build demo_simple
+	add_executable(demo_simple demo_simple.cpp)
+	target_link_libraries(demo_simple ${PROJECT_NAME})
+endif()
